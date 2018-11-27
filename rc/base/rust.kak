@@ -43,7 +43,7 @@ define-command -hidden rust-filter-around-selections %{
 }
 
 define-command -hidden rust-indent-on-new-line %~
-    evaluate-commands -draft -itersel %<
+    evaluate-commands -itersel %<
         # copy // comments prefix and following white spaces
         try %{ execute-keys -draft k <a-x> s ^\h*\K//[!/]?\h* <ret> y gh j P }
         # preserve previous line indent
@@ -52,8 +52,10 @@ define-command -hidden rust-indent-on-new-line %~
         try %{ execute-keys -draft k : rust-filter-around-selections <ret> }
         # indent after lines ending with { or (
         try %[
-          set-register '"' ' '
-          execute-keys -draft k <a-x> <a-k> [{(]\h*$ <ret> j <end>reg '"' %opt{indentwidth}
+          set-register '"' '\t'
+          info %reg{dquote}
+          nop %sh{ sleep 5 }
+          execute-keys k <a-x> <a-k> [{(]\h*$ <ret> j g l reg '"' %opt{indentwidth}
         ]
         # align to opening paren of previous line
         try %{ execute-keys -draft [( <a-k> \A\([^\n]+\n[^\n]*\n?\z <ret> s \A\(\h*.|.\z <ret> & }
